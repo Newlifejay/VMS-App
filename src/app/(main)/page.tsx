@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import getDb from "@/lib/db";
 import Link from "next/link";
 import { UserCheck, Search, LogOut } from "lucide-react";

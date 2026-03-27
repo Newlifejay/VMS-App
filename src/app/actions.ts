@@ -3,7 +3,11 @@
 import getDb from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
-export async function checkInVisitor(formData: FormData) {
+// ✅ CHECK-IN
+export async function submitCheckIn(
+  prevState: any,
+  formData: FormData
+) {
   const fullName = formData.get("full_name") as string;
   const phone = formData.get("phone_number") as string;
   const email = formData.get("email") as string;
@@ -14,10 +18,9 @@ export async function checkInVisitor(formData: FormData) {
     return { error: "Missing required fields", success: false };
   }
 
-  const db = await getDb(); // ✅ FIXED
+  const db = await getDb();
 
-  // ✅ Check if visitor already checked in
-  const existingResult = await db.request()
+  const existing = await db.request()
     .input("fullName", fullName)
     .input("phone", phone)
     .query(`
@@ -28,17 +31,13 @@ export async function checkInVisitor(formData: FormData) {
         AND status = 'Checked-in'
     `);
 
-  if (existingResult.recordset.length > 0) {
-    return {
-      error: "Visitor is currently checked in. Please check them out first.",
-      success: false
-    };
+  if (existing.recordset.length > 0) {
+    return { error: "Visitor already checked in", success: false };
   }
 
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
 
-  // ✅ Insert new visitor
   await db.request()
     .input("id", id)
     .input("fullName", fullName)
@@ -57,6 +56,44 @@ export async function checkInVisitor(formData: FormData) {
     `);
 
   revalidatePath("/");
+  return { success: true };
+}
 
+// ✅ PRE-BOOK
+export async function submitPreBook(
+  prevState: any,
+  formData: FormData
+) {
+  const fullName = formData.get("full_name") as string;
+  const phone = formData.get("phone_number") as string;
+  const email = formData.get("email") as string;
+  const host = formData.get("host_name") as string;
+  const purpose = formData.get("purpose") as string;
+
+  if (!fullName || !phone || !host || !purpose) {
+    return { error: "Missing required fields", success: false };
+  }
+
+  const db = await getDb();
+
+  const id = crypto.randomUUID();
+
+  await db.request()
+    .input("id", id)
+    .input("fullName", fullName)
+    .input("phone", phone)
+    .input("email", email || null)
+    .input("host", host)
+    .input("purpose", purpose)
+    .input("status", "Pre-booked")
+    .query(`
+      INSERT INTO visitors (
+        id, full_name, phone_number, email, host_name, purpose, status
+      ) VALUES (
+        @id, @fullName, @phone, @email, @host, @purpose, @status
+      )
+    `);
+
+  revalidatePath("/");
   return { success: true };
 }
