@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 :root {
   --bg-base: #f0f4f8;
   --bg-surface: #ffffff;

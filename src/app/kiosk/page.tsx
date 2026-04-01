@@ -1,75 +1,68 @@
-"use client";
+'use client';
 
-import { useFormState, useFormStatus } from "react-dom";
-import { submitCheckIn } from "@/app/actions";
-import { AlertCircle, UserCheck } from "lucide-react";
-import Link from "next/link";
+import { motion } from 'framer-motion';
+import { LogIn, LogOut, QrCode } from 'lucide-react';
+import Link from 'next/link';
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
+export default function KioskLandingPage() {
   return (
-    <button type="submit" className="btn btn-primary" disabled={pending} style={{ marginTop: "1rem", width: "100%", padding: "1.25rem", fontSize: "1.125rem" }}>
-      <UserCheck size={24} />
-      {pending ? "Processing..." : "Tap to Check In"}
-    </button>
-  );
-}
+    <div className="flex flex-col md:flex-row gap-8 items-center justify-center">
+      {/* Welcome Section */}
+      <motion.div 
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="flex-1 space-y-4"
+      >
+        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-[var(--text-main)] leading-tight">
+          Welcome to <br/>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary)] to-[var(--primary-hover)]">
+            Our Office
+          </span>
+        </h1>
+        <p className="text-xl text-[var(--text-muted)] max-w-md">
+          Please tap one of the options to register your visit.
+        </p>
 
-export default function KioskPage() {
-  const [state, formAction] = useFormState(submitCheckIn, { error: "", success: false });
-
-  return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg-base)" }}>
-      <header style={{ padding: "2rem", background: "var(--bg-surface)", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ color: "var(--primary)", display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: 800 }}>
-          <span style={{ fontSize: "2rem" }}>🏢</span> Welcome to our facility
-        </h2>
-        <Link href="/" className="btn btn-outline" style={{ fontSize: "0.875rem" }}>Exit Kiosk</Link>
-      </header>
-      
-      <main style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-        <div style={{ width: "100%", maxWidth: "800px" }}>
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-            <h1 style={{ fontSize: "3rem", marginBottom: "1rem" }}>Self Check-In</h1>
-            <p style={{ fontSize: "1.25rem", color: "var(--text-muted)" }}>Please enter your details or confirm your pre-booked visit.</p>
-          </div>
-
-          <form action={formAction} className="card animate-fade-in" style={{ padding: "3rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            {state?.error && (
-              <div style={{ padding: "1.5rem", background: "var(--danger-bg)", color: "var(--danger-text)", borderRadius: "var(--radius-md)", marginBottom: "1rem", display: "flex", gap: "1rem", alignItems: "center" }}>
-                <AlertCircle size={24} />
-                <span style={{ fontSize: "1.125rem", fontWeight: 500 }}>{state.error}</span>
-              </div>
-            )}
-            
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
-              <div className="input-group" style={{ marginBottom: 0 }}>
-                <label className="input-label" style={{ fontSize: "1.125rem", color: "var(--text-muted)" }}>Full Name</label>
-                <input type="text" name="fullName" className="input-field" style={{ padding: "1.25rem", fontSize: "1.25rem" }} placeholder="John Doe" required />
-              </div>
-              <div className="input-group" style={{ marginBottom: 0 }}>
-                <label className="input-label" style={{ fontSize: "1.125rem", color: "var(--text-muted)" }}>Phone Number</label>
-                <input type="tel" name="phone" className="input-field" style={{ padding: "1.25rem", fontSize: "1.25rem" }} placeholder="e.g. 555-0100" required />
-              </div>
-            </div>
-            
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
-              <div className="input-group" style={{ marginBottom: 0 }}>
-                <label className="input-label" style={{ fontSize: "1.125rem", color: "var(--text-muted)" }}>Host Name (Who are you visiting?)</label>
-                <input type="text" name="host" className="input-field" style={{ padding: "1.25rem", fontSize: "1.25rem" }} placeholder="Jane Smith" required />
-              </div>
-              <div className="input-group" style={{ marginBottom: 0 }}>
-                <label className="input-label" style={{ fontSize: "1.125rem", color: "var(--text-muted)" }}>Purpose of Visit</label>
-                <input type="text" name="purpose" className="input-field" style={{ padding: "1.25rem", fontSize: "1.25rem" }} placeholder="Meeting" required />
-              </div>
-            </div>
-
-            <input type="hidden" name="email" value="" />
-
-            <SubmitButton />
-          </form>
+        <div className="pt-6">
+          <button className="flex items-center gap-3 text-[var(--primary)] font-medium bg-[var(--primary-light)]/30 px-6 py-3 rounded-full hover:bg-[var(--primary-light)]/60 transition shadow-sm border border-[var(--primary)]/10">
+            <QrCode className="w-5 h-5" />
+            Scan QR Code to Check In
+          </button>
         </div>
-      </main>
+      </motion.div>
+
+      {/* Action Buttons */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        className="flex-shrink-0 flex flex-col gap-6 w-full max-w-sm"
+      >
+        <Link href="/kiosk/check-in" className="group">
+          <div className="glass-panel p-8 text-center cursor-pointer hover:border-[var(--primary)]/50 hover:shadow-lg transition flex flex-col items-center gap-4 bg-[var(--bg-surface)]/80">
+            <div className="w-20 h-20 rounded-full bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <LogIn className="w-10 h-10" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold">Check In</h2>
+              <p className="text-[var(--text-muted)] mt-1">I am a visitor arriving now</p>
+            </div>
+          </div>
+        </Link>
+        
+        <Link href="/kiosk/check-out" className="group">
+          <div className="glass-panel p-8 text-center cursor-pointer hover:border-[var(--danger)]/30 hover:shadow-lg transition flex flex-col items-center gap-4 bg-[var(--bg-surface)]/80">
+            <div className="w-16 h-16 rounded-full bg-[var(--danger-bg)] text-[var(--danger)] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <LogOut className="w-8 h-8" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Check Out</h2>
+              <p className="text-[var(--text-muted)] mt-1 text-sm">I am leaving the building</p>
+            </div>
+          </div>
+        </Link>
+      </motion.div>
     </div>
   );
 }
